@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload Dashboard - AmmerPay</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .payment-required {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        .upload-section {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+        }
+        .card {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: none;
+            margin-bottom: 1.5rem;
+        }
+        .table-responsive {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .status-badge {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+        }
+        .payment-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .payment-option {
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .payment-option:hover {
+            border-color: #007bff;
+            background-color: #f8f9fa;
+        }
+        .payment-option.selected {
+            border-color: #007bff;
+            background-color: #e3f2fd;
+        }
+        .file-upload-area {
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .file-upload-area:hover {
+            border-color: #4ecdc4;
+            background-color: #f8f9fa;
+        }
+        .file-upload-area.dragover {
+            border-color: #4ecdc4;
+            background-color: #e8f5f5;
+        }
+        .upload-progress {
+            display: none;
+            margin-top: 1rem;
+        }
+        .payment-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .payment-option {
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .payment-option:hover {
+            border-color: #007bff;
+            background-color: #f8f9fa;
+        }
+        .payment-option.selected {
+            border-color: #007bff;
+            background-color: #e3f2fd;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    {% csrf_token %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-file-upload me-2"></i>
+                AmmerPay File Upload System
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text me-3">
+                    <i class="fas fa-user me-1"></i>
+                    Welcome, {{ user.username }}!
+                </span>
+                <a href="{% url 'logout' %}" class="btn btn-outline-light btn-sm">
+                    <i class="fas fa-sign-out-alt me-1"></i>Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Payment Status Alert -->
+        {% if payment_status %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                Payment successful! You can now upload files.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endif %}
+
+        <!-- Payment Required Section -->
+        {% if not has_payment %}
+            <div class="payment-required">
+                <i class="fas fa-credit-card fa-3x mb-3"></i>
+                <h3>Payment Required</h3>
+                <p class="lead">You need to complete a payment of ৳100 before uploading files.</p>
+                
+                <!-- Payment Options -->
+                <div class="payment-options">
+                    <div class="payment-option" onclick="selectPaymentMethod('VISA')">
+                        <i class="fab fa-cc-visa fa-2x mb-2"></i>
+                        <div>Visa Card</div>
+                        <small class="text-light">Credit/Debit</small>
+                    </div>
+                    <div class="payment-option" onclick="selectPaymentMethod('MASTER')">
+                        <i class="fab fa-cc-mastercard fa-2x mb-2"></i>
+                        <div>Mastercard</div>
+                        <small class="text-light">Credit/Debit</small>
+                    </div>
+                    <div class="payment-option" onclick="selectPaymentMethod('AMEX')">
+                        <i class="fab fa-cc-amex fa-2x mb-2"></i>
+                        <div>American Express</div>
+                        <small class="text-light">Credit Card</small>
+                    </div>
+                    <div class="payment-option" onclick="selectPaymentMethod('BKASH')">
+                        <i class="fas fa-mobile-alt fa-2x mb-2"></i>
+                        <div>bKash</div>
+                        <small class="text-light">Mobile Banking</small>
+                    </div>
+                    <div class="payment-option" onclick="selectPaymentMethod('NAGAD')">
+                        <i class="fas fa-wallet fa-2x mb-2"></i>
+                        <div>Nagad</div>
+                        <small class="text-light">Mobile Banking</small>
+                    </div>
+                    <div class="payment-option" onclick="selectPaymentMethod('ROCKET')">
+                        <i class="fas fa-rocket fa-2x mb-2"></i>
+                        <div>Rocket</div>
+                        <small class="text-light">Mobile Banking</small>
+                    </div>
+                    <div class="payment-option" onclick="selectPaymentMethod('UPAY')">
+                        <i class="fas fa-credit-card fa-2x mb-2"></i>
+                        <div>UPAY</div>
+                        <small class="text-light">Digital Wallet</small>
+                    </div>
+                    <div class="payment-option" onclick="selectPaymentMethod('TAP')">
+                        <i class="fas fa-tap fa-2x mb-2"></i>
+                        <div>TAP</div>
+                        <small class="text-light">Payment Gateway</small>
+                    </div>
+                </div>
+                
+                <button class="btn btn-light btn-lg mt-3" onclick="initiatePayment()" id="payButton" disabled>
+                    <i class="fas fa-credit-card me-2"></i>
+                    Pay Now (৳100)
+                </button>
+                <p class="mt-2"><small>Select a payment method above</small></p>
+            </div>
+        {% else %}
+            <!-- Welcome Section -->
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                <strong>Welcome back!</strong> You have access to file uploads. Ready to process some documents?
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            
+            <!-- File Upload Section -->
+            <div class="upload-section">
+                <h3><i class="fas fa-cloud-upload-alt me-2"></i>Upload Your File</h3>
+                <p class="mb-3">Supported formats: .txt, .docx (Max size: 10MB)</p>
+                
+                <div class="file-upload-area" id="uploadArea">
+                    <i class="fas fa-cloud-upload-alt fa-3x mb-3 text-muted"></i>
+                    <h5>Drag & Drop files here</h5>
+                    <p class="text-muted">or</p>
+                    <button class="btn btn-light btn-lg" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-folder-open me-2"></i>Browse Files
+                    </button>
+                    <input type="file" id="fileInput" style="display: none;" accept=".txt,.docx" multiple>
+                </div>
+                
+                <div class="upload-progress" id="uploadProgress">
+                    <div class="progress mb-2">
+                        <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                    </div>
+                    <small class="text-muted">Uploading...</small>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Dashboard Content -->
+        <div class="row">
+            <!-- Uploaded Files -->
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-files-o me-2"></i>Uploaded Files
+                        </h5>
+                        <button class="btn btn-light btn-sm" onclick="refreshFiles()">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>File</th>
+                                        <th>Status</th>
+                                        <th>Words</th>
+                                        <th>Uploaded</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="filesTableBody">
+                                    {% for file in files %}
+                                    <tr>
+                                        <td>
+                                            <i class="fas fa-file-{{ file.filename|slice:'-3:'|yesno:'docx,txt' }} me-2"></i>
+                                            {{ file.filename }}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{{ file.status|yesno:'success,warning,danger' }} status-badge">
+                                                {{ file.status|title }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if file.word_count %}
+                                                <span class="badge bg-info">{{ file.word_count }}</span>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ file.upload_time|date:"M d, Y H:i" }}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" onclick="downloadFile('{{ file.id }}')">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger" onclick="deleteFile('{{ file.id }}')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted py-4">
+                                            <i class="fas fa-inbox fa-2x mb-2"></i>
+                                            <p>No files uploaded yet</p>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity & Transactions -->
+            <div class="col-lg-4">
+                <!-- Payment History -->
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h6 class="mb-0">
+                            <i class="fas fa-history me-2"></i>Payment History
+                        </h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-sm mb-0">
+                                <tbody>
+                                    {% for transaction in transactions %}
+                                    <tr>
+                                        <td>
+                                            <small class="text-muted">{{ transaction.timestamp|date:"M d" }}</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{{ transaction.status|yesno:'success,warning,danger' }} status-badge">
+                                                {{ transaction.status|title }}
+                                            </span>
+                                        </td>
+                                        <td class="text-end">৳{{ transaction.amount }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted py-3">
+                                            <small>No transactions</small>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h6 class="mb-0">
+                            <i class="fas fa-activity me-2"></i>Recent Activity
+                        </h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-sm mb-0">
+                                <tbody>
+                                    {% for activity in activities %}
+                                    <tr>
+                                        <td>
+                                            <small class="text-muted">{{ activity.timestamp|date:"M d H:i" }}</small>
+                                        </td>
+                                        <td>
+                                            <small>{{ activity.action|truncatechars:20 }}</small>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="2" class="text-center text-muted py-3">
+                                            <small>No activity</small>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="modal fade" id="paymentModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Processing Payment...</h5>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-credit-card fa-3x text-primary mb-3"></i>
+                        <h6 id="paymentMethodDisplay">Payment Method: <span id="selectedMethod">VISA</span></h6>
+                        <p class="text-muted">Amount: ৳100</p>
+                    </div>
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-3" id="paymentStatus">Initiating payment...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Upload Modal -->
+    <div class="modal fade" id="uploadModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload Files</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="uploadForm" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="uploadFile" class="form-label">Select Files</label>
+                            <input type="file" class="form-control" id="uploadFile" name="file" accept=".txt,.docx" multiple required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Selected Files:</label>
+                            <div id="selectedFiles"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="uploadFiles()">Upload</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let selectedPaymentMethod = null;
+        let uploadModal = null;
+        let paymentModal = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            uploadModal = new bootstrap.Modal(document.getElementById('uploadModal'));
+            paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
+            
+            // Initialize drag and drop
+            initializeDragAndDrop();
+            
+            // Initialize file input
+            document.getElementById('fileInput')?.addEventListener('change', handleFileSelection);
+            
+            // Select default payment method
+            selectPaymentMethod('VISA');
+        });
+
+        function selectPaymentMethod(method) {
+            // Remove previous selection
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Select new method
+            event.target.closest('.payment-option').classList.add('selected');
+            selectedPaymentMethod = method;
+            
+            // Update payment method display
+            document.getElementById('selectedMethod').textContent = method;
+            
+            // Enable pay button
+            document.getElementById('payButton').disabled = false;
+        }
+
+        function initiatePayment() {
+            if (!selectedPaymentMethod) {
+                alert('Please select a payment method first.');
+                return;
+            }
+
+            paymentModal.show();
+            updatePaymentStatus('Initiating payment...');
+            
+            fetch('/api/initiate-payment/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({
+                    payment_method: selectedPaymentMethod
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.redirect_url) {
+                    updatePaymentStatus('Redirecting to payment gateway...');
+                    setTimeout(() => {
+                        window.location.href = data.redirect_url;
+                    }, 1000);
+                } else {
+                    updatePaymentStatus('Payment initiation failed: ' + data.detail);
+                    setTimeout(() => {
+                        paymentModal.hide();
+                        alert('Payment initiation failed: ' + data.detail);
+                    }, 2000);
+                }
+            })
+            .catch(error => {
+                updatePaymentStatus('Error: ' + error.message);
+                setTimeout(() => {
+                    paymentModal.hide();
+                    alert('Error: ' + error.message);
+                }, 2000);
+            });
+        }
+
+        function updatePaymentStatus(message) {
+            document.getElementById('paymentStatus').textContent = message;
+        }
+
+        function initializeDragAndDrop() {
+            const uploadArea = document.getElementById('uploadArea');
+            if (!uploadArea) return;
+
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFiles(files);
+                }
+            });
+        }
+
+        function handleFileSelection(event) {
+            const files = event.target.files;
+            if (files.length > 0) {
+                handleFiles(files);
+            }
+        }
+
+        function handleFiles(files) {
+            console.log('Handling files:', files.length);
+            const validFiles = Array.from(files).filter(file => {
+                const extension = file.name.split('.').pop().toLowerCase();
+                const isValid = ['txt', 'docx'].includes(extension) && file.size <= 10 * 1024 * 1024; // 10MB limit
+                console.log('File validation:', file.name, 'valid:', isValid, 'size:', file.size);
+                return isValid;
+            });
+
+            console.log('Valid files count:', validFiles.length);
+
+            if (validFiles.length === 0) {
+                alert('Please select valid .txt or .docx files (max 10MB each)');
+                return;
+            }
+
+            if (validFiles.length === 1) {
+                console.log('Single file upload');
+                uploadSingleFile(validFiles[0]);
+            } else {
+                console.log('Multiple file upload');
+                // Store files globally for multi-file upload
+                window.selectedFiles = validFiles;
+                showUploadModal(validFiles);
+            }
+        }
+
+        function uploadSingleFile(file) {
+            console.log('Uploading single file:', file.name);
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            showUploadProgress();
+            
+            fetch('/api/upload/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                credentials: 'same-origin',
+                body: formData
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Upload failed with status: ' + response.status);
+                }
+            })
+            .then(data => {
+                console.log('Upload success:', data);
+                hideUploadProgress();
+                alert('File uploaded successfully! Processing started.');
+                location.reload();
+            })
+            .catch(error => {
+                console.error('Upload error:', error);
+                hideUploadProgress();
+                alert('Error: ' + error.message);
+            });
+        }
+
+        function showUploadModal(files) {
+            const selectedFilesDiv = document.getElementById('selectedFiles');
+            selectedFilesDiv.innerHTML = '';
+            
+            files.forEach(file => {
+                const fileDiv = document.createElement('div');
+                fileDiv.className = 'alert alert-info d-flex justify-content-between align-items-center';
+                fileDiv.innerHTML = `
+                    <span>${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+                    <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+                `;
+                selectedFilesDiv.appendChild(fileDiv);
+            });
+            
+            uploadModal.show();
+        }
+
+        function uploadFiles() {
+            console.log('Uploading multiple files');
+            const form = document.getElementById('uploadForm');
+            const formData = new FormData();
+            
+            // Get all selected files from the modal
+            const selectedFiles = document.querySelectorAll('#selectedFiles .alert');
+            console.log('Selected files count:', selectedFiles.length);
+            
+            selectedFiles.forEach(fileDiv => {
+                const fileName = fileDiv.querySelector('span').textContent.split(' (')[0];
+                console.log('Processing file:', fileName);
+                // Find the actual file object from the original files array
+                const file = Array.from(window.selectedFiles || []).find(f => f.name === fileName);
+                if (file) {
+                    formData.append('file', file);
+                    console.log('Added file to FormData:', file.name);
+                } else {
+                    console.warn('File not found in window.selectedFiles:', fileName);
+                }
+            });
+            
+            uploadModal.hide();
+            showUploadProgress();
+            
+            fetch('/api/upload/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                credentials: 'same-origin',
+                body: formData
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Upload failed with status: ' + response.status);
+                }
+            })
+            .then(data => {
+                console.log('Upload success:', data);
+                hideUploadProgress();
+                alert('Files uploaded successfully! Processing started.');
+                location.reload();
+            })
+            .catch(error => {
+                console.error('Upload error:', error);
+                hideUploadProgress();
+                alert('Error: ' + error.message);
+            });
+        }
+
+        function showUploadProgress() {
+            document.getElementById('uploadProgress').style.display = 'block';
+        }
+
+        function hideUploadProgress() {
+            document.getElementById('uploadProgress').style.display = 'none';
+        }
+
+        function refreshFiles() {
+            location.reload();
+        }
+
+        function downloadFile(fileId) {
+            // Download file
+            window.open(`/api/download/${fileId}/`, '_blank');
+        }
+
+        function deleteFile(fileId) {
+            if (confirm('Are you sure you want to delete this file?')) {
+                fetch(`/api/delete/${fileId}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    credentials: 'same-origin'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        alert('File deleted successfully!');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    alert('Error: ' + error.message);
+                });
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - media_volume:/app/media
+    environment:
+      - DEBUG=1
+      - DATABASE_URL=postgresql://ammerpay_user:ammerpay_password@db:5432/ammerpay
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - AAMARPAY_STORE_ID=aamarpaytest
+      - AAMARPAY_SIGNATURE_KEY=dbb74894e82415a2f7ff0ec3a97e4183
+      - AAMARPAY_ENDPOINT=https://sandbox.aamarpay.com/jsonpost.php
+    depends_on:
+      - redis
+      - db
+    command: python manage.py runserver 0.0.0.0:8000
+
+  celery:
+    build: .
+    volumes:
+      - .:/app
+      - media_volume:/app/media
+    environment:
+      - DEBUG=1
+      - DATABASE_URL=postgresql://ammerpay_user:ammerpay_password@db:5432/ammerpay
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+      - db
+    command: celery -A backend worker --loglevel=info
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: ammerpay
+      POSTGRES_USER: ammerpay_user
+      POSTGRES_PASSWORD: ammerpay_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  media_volume:
+  redis_data:
+  postgres_data:

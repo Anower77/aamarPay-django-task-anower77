@@ -1,0 +1,392 @@
+[
+  {
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+      "username": "admin",
+      "password": "pbkdf2_sha256$720000$test123$hash_here",
+      "email": "admin@ammerpay.com",
+      "first_name": "Admin",
+      "last_name": "User",
+      "is_staff": true,
+      "is_superuser": true,
+      "is_active": true,
+      "date_joined": "2025-08-01T09:00:00Z"
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 2,
+    "fields": {
+      "username": "john_doe",
+      "password": "pbkdf2_sha256$720000$test123$hash_here",
+      "email": "john@example.com",
+      "first_name": "John",
+      "last_name": "Doe",
+      "is_staff": false,
+      "is_superuser": false,
+      "is_active": true,
+      "date_joined": "2025-08-02T10:00:00Z"
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 3,
+    "fields": {
+      "username": "sarah_smith",
+      "password": "pbkdf2_sha256$720000$test123$hash_here",
+      "email": "sarah@example.com",
+      "first_name": "Sarah",
+      "last_name": "Smith",
+      "is_staff": false,
+      "is_superuser": false,
+      "is_active": true,
+      "date_joined": "2025-08-03T11:00:00Z"
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 4,
+    "fields": {
+      "username": "mike_wilson",
+      "password": "pbkdf2_sha256$720000$test123$hash_here",
+      "email": "mike@example.com",
+      "first_name": "Mike",
+      "last_name": "Wilson",
+      "is_staff": false,
+      "is_superuser": false,
+      "is_active": true,
+      "date_joined": "2025-08-04T12:00:00Z"
+    }
+  },
+  {
+    "model": "core.paymenttransaction",
+    "pk": 1,
+    "fields": {
+      "user": 2,
+      "transaction_id": "TXN-2025-001",
+      "amount": "100.00",
+      "status": "success",
+      "gateway_response": {
+        "payment_url": "https://sandbox.aamarpay.com/payment/TXN-2025-001",
+        "status": "Completed",
+        "payment_method": "VISA",
+        "gateway_tran_id": "AAMAR-001"
+      },
+      "timestamp": "2025-08-05T09:30:00Z"
+    }
+  },
+  {
+    "model": "core.paymenttransaction",
+    "pk": 2,
+    "fields": {
+      "user": 3,
+      "transaction_id": "TXN-2025-002",
+      "amount": "100.00",
+      "status": "success",
+      "gateway_response": {
+        "payment_url": "https://sandbox.aamarpay.com/payment/TXN-2025-002",
+        "status": "Completed",
+        "payment_method": "MASTER",
+        "gateway_tran_id": "AAMAR-002"
+      },
+      "timestamp": "2025-08-06T10:15:00Z"
+    }
+  },
+  {
+    "model": "core.paymenttransaction",
+    "pk": 3,
+    "fields": {
+      "user": 4,
+      "transaction_id": "TXN-2025-003",
+      "amount": "100.00",
+      "status": "success",
+      "gateway_response": {
+        "payment_url": "https://sandbox.aamarpay.com/payment/TXN-2025-003",
+        "status": "Completed",
+        "payment_method": "BKASH",
+        "gateway_tran_id": "AAMAR-003"
+      },
+      "timestamp": "2025-08-07T11:45:00Z"
+    }
+  },
+  {
+    "model": "core.paymenttransaction",
+    "pk": 4,
+    "fields": {
+      "user": 2,
+      "transaction_id": "TXN-2025-004",
+      "amount": "100.00",
+      "status": "initiated",
+      "gateway_response": {
+        "payment_url": "https://sandbox.aamarpay.com/payment/TXN-2025-004",
+        "status": "Pending",
+        "payment_method": "NAGAD"
+      },
+      "timestamp": "2025-08-08T14:20:00Z"
+    }
+  },
+  {
+    "model": "core.paymenttransaction",
+    "pk": 5,
+    "fields": {
+      "user": 3,
+      "transaction_id": "TXN-2025-005",
+      "amount": "100.00",
+      "status": "failed",
+      "gateway_response": {
+        "payment_url": "https://sandbox.aamarpay.com/payment/TXN-2025-005",
+        "status": "Failed",
+        "payment_method": "VISA",
+        "error": "Insufficient funds"
+      },
+      "timestamp": "2025-08-08T15:30:00Z"
+    }
+  },
+  {
+    "model": "core.fileupload",
+    "pk": 1,
+    "fields": {
+      "user": 2,
+      "file": "uploads/2025/08/05/research_paper.docx",
+      "filename": "research_paper.docx",
+      "upload_time": "2025-08-05T10:00:00Z",
+      "status": "completed",
+      "word_count": 1250
+    }
+  },
+  {
+    "model": "core.fileupload",
+    "pk": 2,
+    "fields": {
+      "user": 2,
+      "file": "uploads/2025/08/05/meeting_notes.txt",
+      "filename": "meeting_notes.txt",
+      "upload_time": "2025-08-05T10:30:00Z",
+      "status": "completed",
+      "word_count": 450
+    }
+  },
+  {
+    "model": "core.fileupload",
+    "pk": 3,
+    "fields": {
+      "user": 3,
+      "file": "uploads/2025/08/06/project_proposal.docx",
+      "filename": "project_proposal.docx",
+      "upload_time": "2025-08-06T11:00:00Z",
+      "status": "completed",
+      "word_count": 2100
+    }
+  },
+  {
+    "model": "core.fileupload",
+    "pk": 4,
+    "fields": {
+      "user": 3,
+      "file": "uploads/2025/08/06/task_list.txt",
+      "filename": "task_list.txt",
+      "upload_time": "2025-08-06T11:15:00Z",
+      "status": "completed",
+      "word_count": 120
+    }
+  },
+  {
+    "model": "core.fileupload",
+    "pk": 5,
+    "fields": {
+      "user": 4,
+      "file": "uploads/2025/08/07/business_plan.docx",
+      "filename": "business_plan.docx",
+      "upload_time": "2025-08-07T12:00:00Z",
+      "status": "processing",
+      "word_count": null
+    }
+  },
+  {
+    "model": "core.fileupload",
+    "pk": 6,
+    "fields": {
+      "user": 4,
+      "file": "uploads/2025/08/07/contact_info.txt",
+      "filename": "contact_info.txt",
+      "upload_time": "2025-08-07T12:10:00Z",
+      "status": "failed",
+      "word_count": null
+    }
+  },
+  {
+    "model": "core.fileupload",
+    "pk": 7,
+    "fields": {
+      "user": 2,
+      "file": "uploads/2025/08/08/weekly_report.docx",
+      "filename": "weekly_report.docx",
+      "upload_time": "2025-08-08T14:30:00Z",
+      "status": "completed",
+      "word_count": 890
+    }
+  },
+  {
+    "model": "core.activitylog",
+    "pk": 1,
+    "fields": {
+      "user": 2,
+      "action": "payment_success",
+      "metadata": {
+        "transaction": "TXN-2025-001",
+        "amount": "100.00",
+        "payment_method": "VISA"
+      },
+      "timestamp": "2025-08-05T09:35:00Z"
+    }
+  },
+  {
+    "model": "core.activitylog",
+    "pk": 2,
+    "fields": {
+      "user": 2,
+      "action": "file_uploaded",
+      "metadata": {
+        "file_id": 1,
+        "filename": "research_paper.docx"
+      },
+      "timestamp": "2025-08-05T10:00:00Z"
+    }
+  },
+  {
+    "model": "core.activitylog",
+    "pk": 3,
+    "fields": {
+      "user": 2,
+      "action": "file_uploaded",
+      "metadata": {
+        "file_id": 2,
+        "filename": "meeting_notes.txt"
+      },
+      "timestamp": "2025-08-05T10:30:00Z"
+    }
+  },
+  {
+    "model": "core.activitylog",
+    "pk": 4,
+    "fields": {
+      "user": 3,
+      "action": "payment_success",
+      "metadata": {
+        "transaction": "TXN-2025-002",
+        "amount": "100.00",
+        "payment_method": "MASTER"
+      },
+      "timestamp": "2025-08-06T10:20:00Z"
+    }
+  },
+  {
+    "model": "core.activitylog",
+    "pk": 5,
+    "fields": {
+      "user": 3,
+      "action": "file_uploaded",
+      "metadata": {
+        "file_id": 3,
+        "filename": "project_proposal.docx"
+      },
+      "timestamp": "2025-08-06T11:00:00Z"
+    }
+  },
+  {
+    "model": "core.activitylog",
+    "pk": 6,
+    "fields": {
+      "user": 3,
+      "action": "file_uploaded",
+      "metadata": {
+        "file_id": 4,
+        "filename": "task_list.txt"
+      },
+      "timestamp": "2025-08-06T11:15:00Z"
+    }
+  },
+  {
+    "model": "core.activitylog",
+    "pk": 7,
+    "fields": {
+      "user": 4,
+      "action": "payment_success",
+      "metadata": {
+        "transaction": "TXN-2025-003",
+        "amount": "100.00",
+        "payment_method": "BKASH"
+      },
+      "timestamp": "2025-08-07T11:50:00Z"
+    }
+  },
+  {
+    "model": "core.activitylog",
+    "pk": 8,
+    "fields": {
+      "user": 4,
+      "action": "file_uploaded",
+      "metadata": {
+        "file_id": 5,
+        "filename": "business_plan.docx"
+      },
+      "timestamp": "2025-08-07T12:00:00Z"
+    }
+  },
+  {
+    "model": "core.activitylog",
+    "pk": 9,
+      "fields": {
+        "user": 4,
+        "action": "file_uploaded",
+        "metadata": {
+          "file_id": 6,
+          "filename": "contact_info.txt"
+        },
+        "timestamp": "2025-08-07T12:10:00Z"
+      }
+  },
+  {
+    "model": "core.activitylog",
+    "pk": 10,
+    "fields": {
+      "user": 2,
+      "action": "payment_initiated",
+      "metadata": {
+        "transaction": "TXN-2025-004",
+        "amount": "100.00",
+        "payment_method": "NAGAD"
+      },
+      "timestamp": "2025-08-08T14:20:00Z"
+    }
+  },
+  {
+    "model": "core.activitylog",
+    "pk": 11,
+    "fields": {
+      "user": 3,
+      "action": "payment_failed",
+      "metadata": {
+        "transaction": "TXN-2025-005",
+        "amount": "100.00",
+        "payment_method": "VISA",
+        "reason": "Insufficient funds"
+      },
+      "timestamp": "2025-08-08T15:30:00Z"
+    }
+  },
+  {
+    "model": "core.activitylog",
+    "pk": 12,
+    "fields": {
+      "user": 2,
+      "action": "file_uploaded",
+      "metadata": {
+        "file_id": 7,
+        "filename": "weekly_report.docx"
+      },
+      "timestamp": "2025-08-08T14:30:00Z"
+    }
+  }
+]
