@@ -7,7 +7,6 @@ python-docx==1.1.0
 requests==2.31.0
 python-dotenv==1.0.0
 Pillow
-psycopg2-binary==2.9.9
 gunicorn==21.2.0
 whitenoise==6.6.0
 dj-database-url==2.1.0
@@ -16,6 +15,5 @@ setuptools>=68
 wheel>=0.40
 Django
 psycopg2-binary==2.9.9
-psycopg[c]==3.1.18
 
 
