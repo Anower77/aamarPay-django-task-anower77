@@ -15,5 +15,7 @@ pip>=25.2
 setuptools>=68
 wheel>=0.40
 Django
-psycopg2-binary>=2.9.0
+psycopg2-binary==2.9.9
+psycopg[c]==3.1.18
+
 
