@@ -14,4 +14,5 @@ dj-database-url==2.1.0
 pip>=25.2
 setuptools>=68
 wheel>=0.40
-
+Django
+psycopg2-binary

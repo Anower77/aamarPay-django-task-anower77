@@ -12,12 +12,10 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         gcc \
         default-libmysqlclient-dev \
+        libpq-dev \
         pkg-config \
-        libjpeg-dev \
-        zlib1g-dev \
-        libpng-dev \
-        libfreetype6-dev \
     && rm -rf /var/lib/apt/lists/*
+
 
 # Install Python dependencies
 COPY requirements.txt /app/
